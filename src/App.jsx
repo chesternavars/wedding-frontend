@@ -6,40 +6,57 @@ export default function App() {
   const [files, setFiles] = useState([]);
   const [msg, setMsg] = useState("");
   const [page, setPage] = useState("home");
+  const [category, setCategory] = useState("");
 
-  // UPLOAD FUNCTION
- const uploadFiles = async () => {
-  if (!files.length) {
-    setMsg("Please select photos");
-    return;
-  }
+  const categories = [
+    "Bride laughing genuinely",
+    "Groom fixing his suit/tie",
+    "Parents getting emotional",
+    "First dance spin",
+    "A stolen kiss",
+    "Group selfie with strangers",
+    "A guest dancing like nobody’s watching"
+  ];
 
-  const formData = new FormData();
+  const uploadFiles = async () => {
+    if (!files.length) {
+      setMsg("Please select photos");
+      return;
+    }
 
-  Array.from(files).forEach((file) => {
-    formData.append("files[]", file); // ✔ IMPORTANT FIX
-  });
+    if (!category) {
+      setMsg("Please select a category");
+      return;
+    }
 
-  try {
-    const res = await axios.post(
-      "http://127.0.0.1:8000/api/upload",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+    const formData = new FormData();
+
+    Array.from(files).forEach((file) => {
+      formData.append("files[]", file);
+    });
+
+    formData.append("category", category);
+
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:8000/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         }
-      }
-    );
+      );
 
-    setMsg(res.data.message);
-    setFiles([]);
-  } catch (err) {
-    console.log(err);
-    setMsg("Upload failed ❌");
-  }
-};
+      setMsg(res.data.message);
+      setFiles([]);
+      setCategory("");
+    } catch (err) {
+      console.log(err);
+      setMsg("Upload failed ❌");
+    }
+  };
 
-  // ALBUM PAGE
   if (page === "album") {
     return <Album onBack={() => setPage("home")} />;
   }
@@ -48,7 +65,7 @@ export default function App() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundImage: "url('/images/11.jpeg')",
+        backgroundImage: "url('/images/background.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         display: "flex",
@@ -75,7 +92,7 @@ export default function App() {
 
         {/* COUPLE IMAGE */}
         <img
-          src="/images/11.jpeg"
+          src="/images/sharahrolly.jpg"
           alt="couple"
           style={{
             width: "320px",
@@ -90,12 +107,15 @@ export default function App() {
         {/* TITLE */}
         <h1
           style={{
-            fontSize: "38px",
+            fontSize: "50px",
             fontFamily: "'Great Vibes', cursive",
-            marginBottom: "5px"
+            margin: "20px 0",
+            lineHeight: "1.2",
+            letterSpacing: "2px",
+            textAlign: "center"
           }}
         >
-          💍 Navarroza Wedding
+          💍 Sharah & Rolly Wedding
         </h1>
 
         <p style={{ fontSize: "13px", color: "#ddd", marginBottom: "20px" }}>
@@ -112,7 +132,35 @@ export default function App() {
           }}
         >
 
-          {/* MULTIPLE FILE INPUT */}
+          {/* CATEGORY SELECT */}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            style={{
+              width: "100%",
+    padding: "12px 15px",
+    marginBottom: "15px",
+    borderRadius: "12px",
+    border: "1px solid rgba(255,255,255,0.3)",
+    background: "rgba(255,255,255,0.1)",
+    color: "white",
+    fontSize: "14px",
+    backdropFilter: "blur(8px)",
+    outline: "none",
+    cursor: "pointer"
+            }}
+          >
+          <option value="" style={{ color: "black" }}>
+    Select photo category
+  </option>
+            {categories.map((cat, i) => (
+              <option key={i} value={cat} style={{ color: "black" }}>
+                {cat}
+              </option>
+            ))}
+          </select>
+
+          {/* FILE INPUT */}
           <input
             type="file"
             multiple
@@ -123,7 +171,6 @@ export default function App() {
 
           {/* UPLOAD BUTTON */}
           <button
-          
             onClick={uploadFiles}
             style={{
               width: "100%",
