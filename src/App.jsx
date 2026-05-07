@@ -95,8 +95,8 @@ export default function App() {
           src="/images/sharahrolly.jpg"
           alt="couple"
           style={{
-            width: "320px",
-            height: "320px",
+            width: "250px",
+            height: "250px",
             borderRadius: "50%",
             objectFit: "cover",
             border: "3px solid white",
@@ -107,7 +107,7 @@ export default function App() {
         {/* TITLE */}
         <h1
           style={{
-            fontSize: "50px",
+            fontSize: "38px",
             fontFamily: "'Great Vibes', cursive",
             margin: "20px 0",
             lineHeight: "1.2",
