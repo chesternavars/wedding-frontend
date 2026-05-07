@@ -1,72 +1,196 @@
+import { useState } from "react";
+
 export default function Album({ onBack }) {
-  const folderId = "YOUR_FOLDER_ID";
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = [
+    "All",
+    "Bride laughing genuinely",
+    "Groom fixing his suit/tie",
+    "Parents getting emotional",
+    "First dance spin",
+    "A stolen kiss",
+    "Group selfie with strangers",
+    "A guest dancing like nobody’s watching"
+  ];
+
+  const images = [
+    { url: "/images/img1.jpg", category: "Bride laughing genuinely" },
+    { url: "/images/img2.jpg", category: "First dance spin" },
+    { url: "/images/img3.jpg", category: "Parents getting emotional" },
+    { url: "/images/img4.jpg", category: "A stolen kiss" }
+  ];
+
+  // FILTER BY CATEGORY
+  const filteredImages =
+    selectedCategory === "All"
+      ? images
+      : images.filter((img) => img.category === selectedCategory);
+
+  const openImage = (index) => {
+    setSelectedIndex(index);
+  };
+
+  const closeModal = () => {
+    setSelectedIndex(null);
+  };
+
+  const nextImage = () => {
+    setSelectedIndex((prev) =>
+      prev === filteredImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setSelectedIndex((prev) =>
+      prev === 0 ? filteredImages.length - 1 : prev - 1
+    );
+  };
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(to bottom right, #111827, #1f2937, #3f2a36)",
+        background: "#111827",
         color: "white",
-        textAlign: "center",
-        padding: "30px"
+        padding: "30px",
+        textAlign: "center"
       }}
-
-
-      
     >
 
-      <h1
-        style={{
-          fontSize: "54px",
-          fontFamily: "'Great Vibes', cursive",
-          color: "#e11d48",
-          marginBottom: "5px"
-        }}
-      >
+      <h1 style={{ fontSize: "50px", fontFamily: "'Great Vibes', cursive" }}>
         💍 Wedding Album
       </h1>
 
-      <p style={{ color: "#ccc", marginBottom: "20px" }}>
-        Our beautiful memories together
-      </p>
-
-      {/* BACK BUTTON */}
+      {/* BACK */}
       <button
         onClick={onBack}
         style={{
-          padding: "10px 25px",
+          padding: "10px 20px",
           borderRadius: "25px",
-          border: "none",
           background: "#e11d48",
           color: "white",
-          fontWeight: "bold",
-          cursor: "pointer",
+          border: "none",
           marginBottom: "20px"
         }}
       >
-        ← Back to Home
+        ← Back
       </button>
 
-      {/* GALLERY */}
+      {/* CATEGORY FILTER */}
+      <div style={{ marginBottom: "20px" }}>
+        {categories.map((cat, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setSelectedCategory(cat);
+              setSelectedIndex(null);
+            }}
+            style={{
+              margin: "5px",
+              padding: "8px 12px",
+              borderRadius: "20px",
+              border: "1px solid white",
+              background: selectedCategory === cat ? "#e11d48" : "transparent",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "12px"
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* GRID */}
       <div
         style={{
-          maxWidth: "1000px",
-          margin: "0 auto",
-          borderRadius: "15px",
-          overflow: "hidden",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.4)"
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+          gap: "10px",
+          maxWidth: "900px",
+          margin: "auto"
         }}
       >
-        <iframe
-          src={`https://drive.google.com/embeddedfolderview?id=${folderId}#grid`}
-          style={{
-            width: "100%",
-            height: "650px",
-            border: "none"
-          }}
-        ></iframe>
+        {filteredImages.map((img, index) => (
+          <img
+            key={index}
+            src={img.url}
+            onClick={() => openImage(index)}
+            style={{
+              width: "100%",
+              height: "150px",
+              objectFit: "cover",
+              borderRadius: "10px",
+              cursor: "pointer"
+            }}
+          />
+        ))}
       </div>
+
+      {/* MODAL */}
+      {selectedIndex !== null && filteredImages[selectedIndex] && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column"
+          }}
+        >
+
+          <img
+            src={filteredImages[selectedIndex].url}
+            style={{
+              maxWidth: "90%",
+              maxHeight: "80vh",
+              borderRadius: "10px"
+            }}
+          />
+
+          <p style={{ marginTop: "10px", color: "#ccc" }}>
+            {filteredImages[selectedIndex].category}
+          </p>
+
+          {/* CONTROLS */}
+          <div style={{ marginTop: "20px" }}>
+
+            <button onClick={prevImage} style={btnStyle}>◀</button>
+
+            <button onClick={closeModal} style={closeStyle}>
+              Close
+            </button>
+
+            <button onClick={nextImage} style={btnStyle}>▶</button>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
 }
+
+const btnStyle = {
+  padding: "10px 15px",
+  margin: "0 10px",
+  borderRadius: "50%",
+  border: "none",
+  background: "#e11d48",
+  color: "white",
+  fontSize: "20px",
+  cursor: "pointer"
+};
+
+const closeStyle = {
+  padding: "10px 20px",
+  margin: "0 10px",
+  borderRadius: "20px",
+  border: "none",
+  background: "gray",
+  color: "white"
+};
